@@ -1,0 +1,42 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventSourcingDemo.Web", "EventSourcingDemo.Web\EventSourcingDemo.Web.csproj", "{F3FB44F4-A0EC-45F0-B615-14267BD92954}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PublishScripts", "PublishScripts", "{3EAC37D1-51D2-4F3B-B537-62070C384E10}"
+	ProjectSection(SolutionItems) = preProject
+		PublishScripts\AzureWebsitePublishModule.psm1 = PublishScripts\AzureWebsitePublishModule.psm1
+		PublishScripts\Publish-WebApplicationWebsite.ps1 = PublishScripts\Publish-WebApplicationWebsite.ps1
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Configurations", "Configurations", "{E0532205-9647-4D5B-9EEC-9BA313C63538}"
+	ProjectSection(SolutionItems) = preProject
+		PublishScripts\Configurations\EventSourcingDemoWeb-WAWS-dev.json = PublishScripts\Configurations\EventSourcingDemoWeb-WAWS-dev.json
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventSourcingDemo.Domain", "EventSourcingDemo.Domain\EventSourcingDemo.Domain.csproj", "{149059C9-D5EC-4D63-A03A-D91F55758CA5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F3FB44F4-A0EC-45F0-B615-14267BD92954}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F3FB44F4-A0EC-45F0-B615-14267BD92954}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F3FB44F4-A0EC-45F0-B615-14267BD92954}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F3FB44F4-A0EC-45F0-B615-14267BD92954}.Release|Any CPU.Build.0 = Release|Any CPU
+		{149059C9-D5EC-4D63-A03A-D91F55758CA5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{149059C9-D5EC-4D63-A03A-D91F55758CA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{149059C9-D5EC-4D63-A03A-D91F55758CA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{149059C9-D5EC-4D63-A03A-D91F55758CA5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{E0532205-9647-4D5B-9EEC-9BA313C63538} = {3EAC37D1-51D2-4F3B-B537-62070C384E10}
+	EndGlobalSection
+EndGlobal
