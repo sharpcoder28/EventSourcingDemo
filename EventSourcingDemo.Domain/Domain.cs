@@ -8,6 +8,7 @@ namespace EventSourcingDemo.Domain
     public class Shipment : AggregateRoot
     {
         private Guid _id;
+        private decimal Weight;
 
         private void Apply(ShipmentCreated e)
         {
@@ -25,6 +26,8 @@ namespace EventSourcingDemo.Domain
         }
         public Shipment(Guid id, decimal weight, int quantity, decimal freightClass)
         {
+            if (weight > 5000) throw new InvalidOperationException("Weight cannot be greater than 5,000 lbs.");
+            
             ApplyChange(new ShipmentCreated(id, weight, quantity, freightClass));
         }
     }

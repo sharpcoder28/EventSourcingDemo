@@ -1,7 +1,10 @@
-﻿using System;
+﻿using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Table;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace EventSourcingDemo.Domain
 {
@@ -13,6 +16,28 @@ namespace EventSourcingDemo.Domain
 
     public class AzureTableEventStore : IEventStore
     {
+        private readonly IEventPublisher _publisher;
+
+        public AzureTableEventStore(IEventPublisher publisher)
+        {
+            _publisher = publisher;
+        }
+
+        private struct EventDescriptor
+        {
+
+            public readonly Event EventData;
+            public readonly Guid Id;
+            public readonly int Version;
+
+            public EventDescriptor(Guid id, Event eventData, int version)
+            {
+                EventData = eventData;
+                Version = version;
+                Id = id;
+            }
+        }
+
         public List<Event> GetEventsForAggregate(Guid aggregateId)
         {
             throw new NotImplementedException();
@@ -20,8 +45,69 @@ namespace EventSourcingDemo.Domain
 
         public void SaveEvents(Guid aggregateId, IEnumerable<Event> events, int expectedVersion)
         {
-            throw new NotImplementedException();
+            var enterpriseID = new Guid("b1c805bc-41bf-4362-87c1-e8921e7e16df");
+
+            var connectionString = "DefaultEndpointsProtocol=https;AccountName=blueshipdev;AccountKey=kWlQ0YZuxojqmY0oge8XETPGLyiltJfSFXghBnW0f7mUFp6fg2721+jEbsQb0hiYTvUzZHGRwg0kGjLInI3T2g==";
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(connectionString);
+
+            // Create the table client.
+            CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
+
+            // Create the table if it doesn't exist.
+            CloudTable table = tableClient.GetTableReference("shipments");
+            table.CreateIfNotExists();
+
+            
+            var i = expectedVersion;
+
+            // iterate through current aggregate events increasing version with each processed event
+            foreach (var @event in events)
+            {
+                i++;
+                @event.Version = i;
+
+                string eventType = @event.GetType().Name;
+
+                string eventData = JsonConvert.SerializeObject(@event, new JsonSerializerSettings
+                {                    
+                    TypeNameHandling = TypeNameHandling.All,                    
+                    TypeNameAssemblyFormat = System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Simple
+                });
+
+                var shipmentEntity = new ShipmentEntity(aggregateId, i, eventData);
+
+                // Create the TableOperation object that inserts the customer entity.
+                TableOperation insertOperation = TableOperation.Insert(shipmentEntity);
+
+                // Execute the insert operation.
+                table.Execute(insertOperation);
+
+                // push event to the event descriptors list for current aggregate
+                //eventDescriptors.Add(new EventDescriptor(aggregateId, @event, i));
+
+                // publish current event to the bus for further processing by subscribers
+                _publisher.Publish(@event);
+            }
+
+
+
         }
+    }
+
+    public class ShipmentEntity : TableEntity
+    {
+        public ShipmentEntity(Guid shipmentID, int version, string eventData)
+        {
+            var formattedVersion = version.ToString("D10");
+            this.PartitionKey = shipmentID.ToString();
+            this.RowKey = formattedVersion;            
+            this.EventData = eventData;            
+        }
+
+        public ShipmentEntity() { }        
+               
+
+        public string EventData { get; set; }        
     }
 
     public class EventStore : IEventStore
